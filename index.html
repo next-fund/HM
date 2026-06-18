@@ -1,0 +1,2443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Halal Money - Sharia-Compliant Mudarabah Platform</title>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Amiri:wght@400;
+700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #0d7a3e;
+        --primary-dark: #095e2f;
+        --primary-light: #e8f5ec;
+        --gold: #c8963e;
+        --gold-light: #f5e6cc;
+        --gold-dark: #a67a2e;
+        --bg: #f7f8fa;
+        --surface: #ffffff;
+        --surface-alt: #f0f4f1;
+        --text: #1a1d23;
+        --text-secondary: #5a6170;
+        --text-muted: #8b919e;
+        --border: #e2e6ea;
+        --danger: #d93030;
+        --danger-light: #fdeded;
+        --success: #0d7a3e;
+        --success-light: #e8f5ec;
+        --warning: #e8a317;
+        --warning-light: #fff8e8;
+        --info: #2563eb;
+        --info-light: #ebf0fd;
+        --shadow-sm:
+          0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+        --shadow-lg:
+          0 12px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+        --radius-sm: 8px;
+        --radius: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+        --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --font-heading: "Poppins", sans-serif;
+        --font-body: "Poppins", sans-serif;
+        --font-arabic: "Amiri", serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-body);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c4cdd5;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a0aab4;
+      }
+
+      /* ========== HEADER / NAV ========== */
+      .header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: var(--shadow-sm);
+      }
+      .header-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: var(--primary);
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .header-logo .logo-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm);
+        background: linear-gradient(135deg, var(--primary), #0a9e4f);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .btn {
+        font-family: var(--font-heading);
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 10px 18px;
+        border-radius: var(--radius-sm);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        box-shadow: var(--shadow);
+        transform: translateY(-1px);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+      .btn-outline:hover {
+        background: var(--primary-light);
+      }
+      .btn-gold {
+        background: var(--gold);
+        color: #fff;
+      }
+      .btn-gold:hover {
+        background: var(--gold-dark);
+        box-shadow: var(--shadow);
+        transform: translateY(-1px);
+      }
+      .btn-danger {
+        background: var(--danger);
+        color: #fff;
+      }
+      .btn-danger:hover {
+        background: #b82525;
+      }
+      .btn-sm {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+        border-radius: 6px;
+      }
+      .btn-lg {
+        padding: 14px 28px;
+        font-size: 1rem;
+        border-radius: var(--radius);
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      /* ========== MAIN CONTAINER ========== */
+      .main-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+
+      /* ========== AUTH SCREENS ========== */
+      .auth-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 64px);
+        padding: 20px;
+      }
+      .auth-card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        padding: 40px 32px;
+        width: 100%;
+        max-width: 460px;
+        border: 1px solid var(--border);
+      }
+      .auth-card h2 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.6rem;
+        text-align: center;
+        margin-bottom: 6px;
+        color: var(--text);
+      }
+      .auth-card .subtitle {
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 24px;
+      }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 500;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+        color: var(--text);
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        transition: var(--transition);
+        background: var(--surface-alt);
+        color: var(--text);
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(13, 122, 62, 0.08);
+        background: #fff;
+      }
+      .auth-switch {
+        text-align: center;
+        margin-top: 16px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+      }
+      .auth-switch a {
+        color: var(--primary);
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      .auth-switch a:hover {
+        color: var(--primary-dark);
+      }
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 20px 0;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      /* ========== DASHBOARD ========== */
+      .dashboard {
+        display: none;
+      }
+      .dashboard.active {
+        display: block;
+      }
+      .welcome-banner {
+        background: linear-gradient(135deg, var(--primary), #0a9e4f);
+        color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow);
+      }
+      .welcome-banner h1 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+      }
+      .welcome-banner .arabic {
+        font-family: var(--font-arabic);
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 20px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+      }
+      .stat-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+      }
+      .stat-card .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+      }
+      .stat-card .stat-value {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.6rem;
+        color: var(--text);
+        margin-top: 4px;
+      }
+      .stat-card .stat-sub {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+      }
+      .stat-card.gold-border {
+        border-left: 4px solid var(--gold);
+      }
+      .stat-card.green-border {
+        border-left: 4px solid var(--primary);
+      }
+      .section-title {
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: 1.15rem;
+        margin-bottom: 14px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 24px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 20px;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .address-display {
+        background: var(--surface-alt);
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        font-family: "Courier New", monospace;
+        font-size: 0.8rem;
+        word-break: break-all;
+        color: var(--text);
+        border: 1px dashed var(--border);
+        user-select: all;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      .badge-pending {
+        background: var(--warning-light);
+        color: #9a6b00;
+      }
+      .badge-approved {
+        background: var(--success-light);
+        color: var(--success);
+      }
+      .badge-rejected {
+        background: var(--danger-light);
+        color: var(--danger);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      table th,
+      table td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+      table th {
+        background: var(--surface-alt);
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      table tr:hover td {
+        background: var(--surface-alt);
+      }
+      .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+      }
+      .empty-state .icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+        opacity: 0.6;
+      }
+
+      /* ========== ADMIN PANEL ========== */
+      .admin-panel {
+        display: none;
+      }
+      .admin-panel.active {
+        display: block;
+      }
+      .admin-tabs {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0;
+      }
+      .admin-tab {
+        padding: 10px 18px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        border-bottom: 3px solid transparent;
+        transition: var(--transition);
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        font-family: var(--font-body);
+      }
+      .admin-tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        font-weight: 600;
+      }
+      .admin-tab:hover {
+        color: var(--primary);
+      }
+      .admin-content {
+        display: none;
+      }
+      .admin-content.active {
+        display: block;
+      }
+
+      /* ========== TOAST ========== */
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toast {
+        padding: 14px 20px;
+        border-radius: var(--radius-sm);
+        color: #fff;
+        font-weight: 500;
+        font-size: 0.9rem;
+        box-shadow: var(--shadow-lg);
+        animation: slideIn 0.3s ease;
+        max-width: 400px;
+        cursor: pointer;
+      }
+      .toast-success {
+        background: #0d7a3e;
+      }
+      .toast-error {
+        background: #d93030;
+      }
+      .toast-info {
+        background: #2563eb;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(120%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* ========== MODAL ========== */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        animation: fadeIn 0.2s ease;
+      }
+      .modal {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: var(--shadow-lg);
+        max-height: 85vh;
+        overflow-y: auto;
+      }
+      .modal h3 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* ========== FOOTER ========== */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+      }
+      .footer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .footer .telegram-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin: 10px 0;
+      }
+      .telegram-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #0088cc;
+        color: #fff !important;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+      .telegram-link:hover {
+        background: #006da3;
+        transform: translateY(-1px);
+      }
+
+      /* ========== RESPONSIVE ========== */
+      @media (max-width: 768px) {
+        .header {
+          padding: 0 14px;
+          height: 56px;
+        }
+        .header-logo {
+          font-size: 1rem;
+        }
+        .header-logo .logo-icon {
+          width: 32px;
+          height: 32px;
+          font-size: 1rem;
+        }
+        .btn {
+          padding: 8px 14px;
+          font-size: 0.8rem;
+        }
+        .auth-card {
+          padding: 28px 18px;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .stat-card {
+          padding: 14px;
+        }
+        .stat-card .stat-value {
+          font-size: 1.2rem;
+        }
+        .welcome-banner {
+          padding: 20px;
+        }
+        .welcome-banner h1 {
+          font-size: 1.2rem;
+        }
+        .card {
+          padding: 16px;
+        }
+        table {
+          font-size: 0.75rem;
+        }
+        table th,
+        table td {
+          padding: 6px 8px;
+        }
+        .admin-tabs {
+          gap: 2px;
+        }
+        .admin-tab {
+          padding: 8px 12px;
+          font-size: 0.75rem;
+        }
+      }
+      @media (max-width: 400px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .header-actions {
+          gap: 6px;
+        }
+        .btn {
+          padding: 6px 10px;
+          font-size: 0.7rem;
+        }
+      }
+
+      .hidden {
+        display: none !important;
+      }
+      .text-center {
+        text-align: center;
+      }
+      .mt-2 {
+        margin-top: 8px;
+      }
+      .mt-3 {
+        margin-top: 16px;
+      }
+      .mb-3 {
+        margin-bottom: 16px;
+      }
+      .text-danger {
+        color: var(--danger);
+      }
+      .text-success {
+        color: var(--success);
+      }
+      .text-muted {
+        color: var(--text-muted);
+      }
+      .text-gold {
+        color: var(--gold);
+      }
+      .fw-bold {
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ==================== HEADER ==================== -->
+    <header class="header" id="header">
+      <div class="header-logo" onclick="goHome()">
+        <div class="logo-icon">HM</div>
+        <span>Halal Money</span>
+      </div>
+      <div class="header-actions" id="headerActions">
+        <button
+          class="btn btn-outline btn-sm"
+          onclick="showAuth('login')"
+          id="btnLogin"
+        >
+          Sign In
+        </button>
+        <button
+          class="btn btn-primary btn-sm"
+          onclick="showAuth('signup')"
+          id="btnSignup"
+        >
+          Sign Up
+        </button>
+        <button
+          class="btn btn-outline btn-sm hidden"
+          onclick="handleLogout()"
+          id="btnLogout"
+        >
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- ==================== TOAST CONTAINER ==================== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ==================== AUTH SECTION ==================== -->
+    <div class="auth-wrapper" id="authWrapper">
+      <!-- Login Card -->
+      <div class="auth-card" id="loginCard">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to your Halal Money account</p>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="••••••••"
+              required
+              minlength="6"
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg"
+            style="width: 100%; justify-content: center"
+          >
+            Sign In
+          </button>
+        </form>
+        <div class="auth-switch mt-3">
+          Don't have an account? <a onclick="showAuth('signup')">Sign Up</a>
+        </div>
+      </div>
+
+      <!-- Signup Card -->
+      <div class="auth-card hidden" id="signupCard">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join our Sharia-compliant Mudarabah platform</p>
+        <form id="signupForm" onsubmit="handleSignup(event)">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              id="signupName"
+              placeholder="Your full name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              id="signupEmail"
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              id="signupPassword"
+              placeholder="Min 6 characters"
+              required
+              minlength="6"
+            />
+          </div>
+          <div class="form-group">
+            <label
+              >Invitation Code <span class="text-muted">(optional)</span></label
+            >
+            <input
+              type="text"
+              id="signupInviteCode"
+              placeholder="Enter invitation code"
+              readonly
+              style="background: #f0f0f0"
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg"
+            style="width: 100%; justify-content: center"
+          >
+            Create Account
+          </button>
+        </form>
+        <div class="auth-switch mt-3">
+          Already have an account? <a onclick="showAuth('login')">Sign In</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== USER DASHBOARD ==================== -->
+    <div class="main-container dashboard" id="userDashboard">
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <h1>السلام عليكم - Welcome, <span id="userNameDisplay">User</span></h1>
+        <p class="arabic">
+          بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ - Sharia-Compliant Mudarabah
+        </p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="userStats">
+        <div class="stat-card green-border">
+          <div class="stat-label">Total Balance (USDT)</div>
+          <div class="stat-value" id="statBalance">0.00</div>
+          <div class="stat-sub">Available for withdrawal</div>
+        </div>
+        <div class="stat-card gold-border">
+          <div class="stat-label">Pending Approval</div>
+          <div class="stat-value" id="statPending">0.00</div>
+          <div class="stat-sub">Deposits awaiting admin</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This Month's Profit Share</div>
+          <div class="stat-value text-gold" id="statProfitShare">50%</div>
+          <div class="stat-sub" id="statProfitBonus">
+            Base: 50% | Bonus from invites: 0%
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Referral Earnings</div>
+          <div class="stat-value" id="statReferralEarnings">0.00 USDT</div>
+          <div class="stat-sub">Lifetime referral rewards</div>
+        </div>
+      </div>
+
+      <!-- Actions Row -->
+      <div class="card">
+        <div class="card-header">
+          <span class="section-title">💰 Quick Actions</span>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap">
+          <button class="btn btn-primary" onclick="openDepositModal()">
+            📥 Deposit USDT
+          </button>
+          <button class="btn btn-gold" onclick="openWithdrawModal()">
+            📤 Withdraw USDT
+          </button>
+          <button class="btn btn-outline" onclick="openInviteModal()">
+            🔗 Invite Friends
+          </button>
+          <button class="btn btn-outline" onclick="exportUserData()">
+            📄 Export Records
+          </button>
+        </div>
+      </div>
+
+      <!-- Deposit Info -->
+      <div class="card" id="depositInfoCard">
+        <div class="section-title">
+          📥 Deposit USDT (BNB Smart Chain - BEP20)
+        </div>
+        <p class="text-muted" style="margin-bottom: 10px">
+          Send USDT to the address below, then submit the transaction hash for
+          approval.
+        </p>
+        <div class="address-display" id="depositAddress">
+          0x95c535EA4F83eE5ECa94fC689048d0BE56C4c60d
+        </div>
+        <p class="text-muted mt-2" style="font-size: 0.78rem">
+          ⚠️ Network: BNB Smart Chain (BEP20) | A 1% fee applies on all deposits
+        </p>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="card">
+        <div class="section-title">📋 Transaction History</div>
+        <div class="table-wrap">
+          <table id="userTransactionsTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Fee</th>
+                <th>Status</th>
+                <th>TX Hash / Address</th>
+              </tr>
+            </thead>
+            <tbody id="userTransactionsBody">
+              <tr>
+                <td colspan="6" class="empty-state">
+                  <div class="icon">📭</div>
+                  No transactions yet
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Profit Sharing Info -->
+      <div class="card">
+        <div class="section-title">📊 Profit Sharing Schedule</div>
+        <p>
+          Profits are distributed between the <strong>1st and 3rd</strong> of
+          each month. Our Mudarabah agreement follows a
+          <strong>50/50 profit-sharing</strong> model. Your share increases by
+          <strong>1% for every 100 USDT</strong> deposited by users you invited,
+          applied to the following month's distribution.
+        </p>
+        <p class="text-muted mt-2">
+          In case of market losses, the depositor bears the risk per Sharia
+          principles. However, if loss occurs due to our negligence, we fully
+          compensate it.
+        </p>
+      </div>
+
+      <!-- Telegram Contacts -->
+      <div class="card text-center">
+        <p class="fw-bold">📱 Need Help? Contact Us on Telegram</p>
+        <div class="telegram-links">
+          <a href="https://t.me/hejaz88" target="_blank" class="telegram-link"
+            >💬 @hejaz88 (Support)</a
+          >
+          <a
+            href="https://t.me/HALMONEYBOT"
+            target="_blank"
+            class="telegram-link"
+            >🤖 @HALMONEYBOT (Bot)</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== ADMIN PANEL ==================== -->
+    <div class="main-container admin-panel" id="adminPanel">
+      <div
+        class="welcome-banner"
+        style="background: linear-gradient(135deg, #1a1a2e, #16213e)"
+      >
+        <h1>🛡️ Admin Panel</h1>
+        <p>Manage users, approve transactions, and oversee the platform</p>
+      </div>
+
+      <!-- Admin Stats -->
+      <div class="stats-grid" id="adminStats">
+        <div class="stat-card green-border">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value" id="adminTotalUsers">0</div>
+        </div>
+        <div class="stat-card gold-border">
+          <div class="stat-label">Total Deposits</div>
+          <div class="stat-value" id="adminTotalDeposits">0.00 USDT</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pending Approvals</div>
+          <div class="stat-value text-warning" id="adminPendingCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Fees Collected</div>
+          <div class="stat-value" id="adminTotalFees">0.00 USDT</div>
+        </div>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('pending')">
+          ⏳ Pending Approvals
+        </button>
+        <button class="admin-tab" onclick="switchAdminTab('users')">
+          👥 Users
+        </button>
+        <button class="admin-tab" onclick="switchAdminTab('allTx')">
+          📋 All Transactions
+        </button>
+        <button class="admin-tab" onclick="switchAdminTab('referrals')">
+          🔗 Referrals
+        </button>
+      </div>
+
+      <!-- Pending Approvals -->
+      <div class="admin-content active" id="adminTabPending">
+        <div class="card">
+          <div class="section-title">
+            ⏳ Pending Deposit & Withdrawal Approvals
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>User</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Details</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminPendingBody">
+                <tr>
+                  <td colspan="6" class="empty-state">No pending approvals</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="admin-content" id="adminTabUsers">
+        <div class="card">
+          <div class="section-title">👥 Registered Users</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Invite Code</th>
+                  <th>Balance</th>
+                  <th>Profit Share</th>
+                  <th>Joined</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersBody">
+                <tr>
+                  <td colspan="6" class="empty-state">No users found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Transactions -->
+      <div class="admin-content" id="adminTabAllTx">
+        <div class="card">
+          <div class="section-title">📋 All Transactions</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>User</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Fee</th>
+                  <th>Status</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="adminAllTxBody">
+                <tr>
+                  <td colspan="7" class="empty-state">No transactions</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Referrals -->
+      <div class="admin-content" id="adminTabReferrals">
+        <div class="card">
+          <div class="section-title">🔗 Referral Relationships</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Inviter</th>
+                  <th>Invitee</th>
+                  <th>Invitee Deposits</th>
+                  <th>Bonus Earned</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="adminReferralsBody">
+                <tr>
+                  <td colspan="5" class="empty-state">No referrals yet</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+    <!-- Deposit Modal -->
+    <div class="modal-overlay hidden" id="depositModal">
+      <div class="modal">
+        <h3>📥 Deposit USDT</h3>
+        <p class="text-muted mb-3">
+          Send USDT (BEP20) to the address below, then paste the transaction
+          hash.
+        </p>
+        <div class="address-display mb-3">
+          0x95c535EA4F83eE5ECa94fC689048d0BE56C4c60d
+        </div>
+        <div class="form-group">
+          <label>Amount Sent (USDT)</label>
+          <input
+            type="number"
+            id="depositAmount"
+            placeholder="e.g. 100"
+            step="0.01"
+            min="1"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label>Transaction Hash (TX ID)</label>
+          <input type="text" id="depositTxHash" placeholder="0x..." required />
+        </div>
+        <p class="text-muted" style="font-size: 0.78rem">
+          ⚠️ A 1% fee will be deducted upon approval.
+        </p>
+        <div style="display: flex; gap: 10px; margin-top: 16px">
+          <button class="btn btn-primary" onclick="submitDeposit()">
+            Submit for Approval
+          </button>
+          <button class="btn btn-outline" onclick="closeModal('depositModal')">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div class="modal-overlay hidden" id="withdrawModal">
+      <div class="modal">
+        <h3>📤 Withdraw USDT</h3>
+        <div class="form-group">
+          <label>Amount (USDT)</label>
+          <input
+            type="number"
+            id="withdrawAmount"
+            placeholder="Min 10 USDT"
+            step="0.01"
+            min="10"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label>Your BNB Smart Chain (BEP20) Address</label>
+          <input
+            type="text"
+            id="withdrawAddress"
+            placeholder="0x..."
+            required
+          />
+        </div>
+        <p class="text-muted" style="font-size: 0.78rem">
+          ⚠️ A 1% withdrawal fee applies. Admin approval required.
+        </p>
+        <p class="text-muted" style="font-size: 0.78rem">
+          Available balance:
+          <strong id="withdrawAvailBalance">0.00 USDT</strong>
+        </p>
+        <div style="display: flex; gap: 10px; margin-top: 16px">
+          <button class="btn btn-gold" onclick="submitWithdrawal()">
+            Request Withdrawal
+          </button>
+          <button class="btn btn-outline" onclick="closeModal('withdrawModal')">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invite Modal -->
+    <div class="modal-overlay hidden" id="inviteModal">
+      <div class="modal">
+        <h3>🔗 Invite Friends & Earn More</h3>
+        <p>
+          Share your invitation link. When your friends deposit, you earn
+          <strong>1% of their deposit</strong> as a reward, and your profit
+          share increases by <strong>1% for every 100 USDT</strong> they deposit
+          (applied next month).
+        </p>
+        <div class="form-group mt-3">
+          <label>Your Invitation Link</label>
+          <div class="address-display" id="inviteLinkDisplay">Loading...</div>
+        </div>
+        <div class="form-group">
+          <label>Your Invitation Code</label>
+          <div class="address-display" id="inviteCodeDisplay">Loading...</div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 16px">
+          <button class="btn btn-primary" onclick="copyInviteLink()">
+            📋 Copy Link
+          </button>
+          <button class="btn btn-gold" onclick="shareInviteLink()">
+            📤 Share
+          </button>
+          <button class="btn btn-outline" onclick="closeModal('inviteModal')">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <div class="footer">
+      <p><strong>Halal Money</strong> — Sharia-Compliant Mudarabah Platform</p>
+      <p>Free from Riba, Alcohol, and Gambling • 50/50 Profit Sharing</p>
+      <div class="telegram-links">
+        <a href="https://t.me/hejaz88" target="_blank" class="telegram-link"
+          >💬 @hejaz88</a
+        >
+        <a href="https://t.me/HALMONEYBOT" target="_blank" class="telegram-link"
+          >🤖 @HALMONEYBOT</a
+        >
+      </div>
+      <p class="text-muted">© 2024 Halal Money. All rights reserved.</p>
+    </div>
+
+    <script>
+      // ==================== FIREBASE CONFIGURATION ====================
+      // 🔴 REPLACE THESE WITH YOUR FIREBASE PROJECT CONFIG
+      const firebaseConfig = {
+        apiKey: "AIzaSyDCdiT8huu8P3Mf7Z5s4iOiEswa0q2-4Lc",
+        authDomain: "halal-money-835a7.firebaseapp.com",
+        projectId: "halal-money-835a7",
+        storageBucket: "halal-money-835a7.firebasestorage.app",
+        messagingSenderId: "290076775406",
+        appId: "1:290076775406:web:bd6643c6b555137d5874ff",
+      };
+
+      // Initialize Firebase
+      let app, auth, db;
+      try {
+        app = firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        db = firebase.firestore();
+        console.log("✅ Firebase initialized");
+      } catch (e) {
+        console.warn("⚠️ Firebase config not set. Using demo mode.", e.message);
+      }
+
+      // ==================== CONSTANTS ====================
+      const PLATFORM_USDT_ADDRESS =
+        "0x95c535EA4F83eE5ECa94fC689048d0BE56C4c60d";
+      const ADMIN_EMAIL = "ahmad.niazi14@gmail.com";
+      const TELEGRAM_SUPPORT = "@hejaz88";
+      const TELEGRAM_BOT = "@HALMONEYBOT";
+      const DEPOSIT_FEE_PERCENT = 1;
+      const WITHDRAWAL_FEE_PERCENT = 1;
+      const REFERRAL_REWARD_PERCENT = 1;
+      const PROFIT_SHARE_BASE = 50;
+      const PROFIT_SHARE_BONUS_PER_100_USDT = 1;
+
+      // ==================== STATE ====================
+      let currentUser = null;
+      let currentUserData = null;
+      let isAdmin = false;
+      let pendingInviteCode = "";
+
+      // ==================== INITIALIZATION ====================
+      document.addEventListener("DOMContentLoaded", () => {
+        // Check for invite code in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get("ref");
+        if (refCode) {
+          pendingInviteCode = refCode;
+          const inviteInput = document.getElementById("signupInviteCode");
+          if (inviteInput) {
+            inviteInput.value = refCode;
+            inviteInput.style.background = "#e8f5ec";
+          }
+        }
+
+        // Listen for auth state
+        if (auth) {
+          auth.onAuthStateChanged(async (user) => {
+            if (user) {
+              if (!user.emailVerified && auth.currentUser) {
+                // Show reminder to verify email
+                showToast(
+                  "Please verify your email. Check your inbox.",
+                  "info",
+                );
+              }
+              currentUser = user;
+              isAdmin = user.email === ADMIN_EMAIL;
+              await loadUserData(user);
+              showDashboard();
+            } else {
+              currentUser = null;
+              currentUserData = null;
+              isAdmin = false;
+              showAuth("login");
+            }
+          });
+        } else {
+          // Demo mode - show auth
+          showAuth("login");
+        }
+      });
+
+      // ==================== AUTH FUNCTIONS ====================
+      function showAuth(type) {
+        document.getElementById("authWrapper").style.display = "flex";
+        document.getElementById("userDashboard").classList.remove("active");
+        document.getElementById("adminPanel").classList.remove("active");
+        document.getElementById("loginCard").classList.add("hidden");
+        document.getElementById("signupCard").classList.add("hidden");
+        document.getElementById("btnLogin").classList.remove("hidden");
+        document.getElementById("btnSignup").classList.remove("hidden");
+        document.getElementById("btnLogout").classList.add("hidden");
+
+        if (type === "login") {
+          document.getElementById("loginCard").classList.remove("hidden");
+        } else {
+          document.getElementById("signupCard").classList.remove("hidden");
+          // Pre-fill invite code
+          if (pendingInviteCode) {
+            document.getElementById("signupInviteCode").value =
+              pendingInviteCode;
+            document.getElementById("signupInviteCode").style.background =
+              "#e8f5ec";
+          }
+        }
+      }
+
+      async function handleSignup(event) {
+        event.preventDefault();
+        const name = document.getElementById("signupName").value.trim();
+        const email = document.getElementById("signupEmail").value.trim();
+        const password = document.getElementById("signupPassword").value;
+        const inviteCode =
+          document.getElementById("signupInviteCode").value.trim() ||
+          pendingInviteCode;
+
+        if (!name || !email || !password) {
+          showToast("Please fill all fields", "error");
+          return;
+        }
+        if (password.length < 6) {
+          showToast("Password must be at least 6 characters", "error");
+          return;
+        }
+
+        try {
+          const userCredential = await auth.createUserWithEmailAndPassword(
+            email,
+            password,
+          );
+          const user = userCredential.user;
+
+          // Send email verification
+          await user.sendEmailVerification();
+
+          // Generate unique invitation code
+          const inviteCodeGenerated = generateInviteCode(user.uid);
+
+          // Create user document
+          const userData = {
+            uid: user.uid,
+            name: name,
+            email: email,
+            inviteCode: inviteCodeGenerated,
+            invitedBy: inviteCode || null,
+            balance: 0,
+            totalDeposited: 0,
+            totalWithdrawn: 0,
+            referralEarnings: 0,
+            profitSharePercent: PROFIT_SHARE_BASE,
+            profitShareBonus: 0,
+            totalInviteeDeposits: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          };
+
+          await db.collection("users").doc(user.uid).set(userData);
+
+          // Handle referral if invite code provided
+          if (inviteCode) {
+            await processReferral(inviteCode, user.uid);
+          }
+
+          showToast("Account created! Please verify your email.", "success");
+          showAuth("login");
+          document.getElementById("signupForm").reset();
+          pendingInviteCode = "";
+        } catch (error) {
+          console.error("Signup error:", error);
+          showToast(getFirebaseErrorMessage(error), "error");
+        }
+      }
+
+      async function handleLogin(event) {
+        event.preventDefault();
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+
+        try {
+          const userCredential = await auth.signInWithEmailAndPassword(
+            email,
+            password,
+          );
+          const user = userCredential.user;
+
+          if (!user.emailVerified) {
+            showToast(
+              "Please verify your email first. Check your inbox or spam folder.",
+              "info",
+            );
+            // Optionally resend verification
+            await user.sendEmailVerification();
+            return;
+          }
+
+          currentUser = user;
+          isAdmin = user.email === ADMIN_EMAIL;
+          await loadUserData(user);
+          showDashboard();
+          showToast("Signed in successfully! السلام عليكم", "success");
+        } catch (error) {
+          console.error("Login error:", error);
+          showToast(getFirebaseErrorMessage(error), "error");
+        }
+      }
+
+      async function handleLogout() {
+        try {
+          await auth.signOut();
+          currentUser = null;
+          currentUserData = null;
+          isAdmin = false;
+          showAuth("login");
+          showToast("Logged out successfully", "info");
+        } catch (error) {
+          showToast("Error logging out", "error");
+        }
+      }
+
+      // ==================== USER DATA ====================
+      async function loadUserData(user) {
+        if (!db || !user) return;
+        try {
+          const doc = await db.collection("users").doc(user.uid).get();
+          if (doc.exists) {
+            currentUserData = doc.data();
+            currentUserData._id = doc.id;
+          } else {
+            // Create if missing
+            const inviteCodeGenerated = generateInviteCode(user.uid);
+            currentUserData = {
+              uid: user.uid,
+              name: user.displayName || user.email.split("@")[0],
+              email: user.email,
+              inviteCode: inviteCodeGenerated,
+              invitedBy: null,
+              balance: 0,
+              totalDeposited: 0,
+              totalWithdrawn: 0,
+              referralEarnings: 0,
+              profitSharePercent: PROFIT_SHARE_BASE,
+              profitShareBonus: 0,
+              totalInviteeDeposits: 0,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+            await db.collection("users").doc(user.uid).set(currentUserData);
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
+          currentUserData = {
+            uid: user.uid,
+            name: user.email.split("@")[0],
+            email: user.email,
+            inviteCode: generateInviteCode(user.uid),
+            balance: 0,
+            totalDeposited: 0,
+            totalWithdrawn: 0,
+            referralEarnings: 0,
+            profitSharePercent: PROFIT_SHARE_BASE,
+            profitShareBonus: 0,
+            totalInviteeDeposits: 0,
+          };
+        }
+      }
+
+      function generateInviteCode(uid) {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let code = "";
+        const seed = uid.replace(/[^a-z0-9]/gi, "") + Date.now().toString(36);
+        for (let i = 0; i < 8; i++) {
+          code += chars.charAt(
+            (seed.charCodeAt(i % seed.length) + i) % chars.length,
+          );
+        }
+        return "HM" + code;
+      }
+
+      async function processReferral(inviteCode, newUserUid) {
+        if (!db) return;
+        try {
+          // Find inviter by invite code
+          const snapshot = await db
+            .collection("users")
+            .where("inviteCode", "==", inviteCode)
+            .limit(1)
+            .get();
+
+          if (!snapshot.empty) {
+            const inviterDoc = snapshot.docs[0];
+            const inviterData = inviterDoc.data();
+
+            // Create referral record
+            await db.collection("referrals").add({
+              inviterUid: inviterDoc.id,
+              inviterCode: inviteCode,
+              inviteeUid: newUserUid,
+              inviteeTotalDeposited: 0,
+              bonusEarned: 0,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            // Update the new user's invitedBy
+            await db.collection("users").doc(newUserUid).update({
+              invitedBy: inviteCode,
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          }
+        } catch (error) {
+          console.error("Error processing referral:", error);
+        }
+      }
+
+      // ==================== DASHBOARD DISPLAY ====================
+      function showDashboard() {
+        document.getElementById("authWrapper").style.display = "none";
+        document.getElementById("btnLogin").classList.add("hidden");
+        document.getElementById("btnSignup").classList.add("hidden");
+        document.getElementById("btnLogout").classList.remove("hidden");
+
+        if (isAdmin) {
+          document.getElementById("userDashboard").classList.remove("active");
+          document.getElementById("adminPanel").classList.add("active");
+          loadAdminPanel();
+        } else {
+          document.getElementById("userDashboard").classList.add("active");
+          document.getElementById("adminPanel").classList.remove("active");
+          updateUserDashboard();
+          loadUserTransactions();
+        }
+      }
+
+      function goHome() {
+        if (currentUser) {
+          showDashboard();
+        } else {
+          showAuth("login");
+        }
+      }
+
+      async function updateUserDashboard() {
+        if (!currentUserData) return;
+        const data = currentUserData;
+
+        document.getElementById("userNameDisplay").textContent =
+          data.name || "User";
+        document.getElementById("statBalance").textContent = (
+          data.balance || 0
+        ).toFixed(2);
+        document.getElementById("statPending").textContent = (
+          data.pendingAmount || 0
+        ).toFixed(2);
+        document.getElementById("statProfitShare").textContent =
+          (data.profitSharePercent || PROFIT_SHARE_BASE) + "%";
+        document.getElementById("statProfitBonus").textContent =
+          `Base: ${PROFIT_SHARE_BASE}% | Bonus from invites: ${data.profitShareBonus || 0}%`;
+        document.getElementById("statReferralEarnings").textContent =
+          (data.referralEarnings || 0).toFixed(2) + " USDT";
+        document.getElementById("depositAddress").textContent =
+          PLATFORM_USDT_ADDRESS;
+        document.getElementById("withdrawAvailBalance").textContent =
+          (data.balance || 0).toFixed(2) + " USDT";
+        document.getElementById("inviteCodeDisplay").textContent =
+          data.inviteCode || "N/A";
+        document.getElementById("inviteLinkDisplay").textContent =
+          window.location.origin +
+          window.location.pathname +
+          "?ref=" +
+          (data.inviteCode || "");
+      }
+
+      async function loadUserTransactions() {
+        if (!db || !currentUser) return;
+        const tbody = document.getElementById("userTransactionsBody");
+        tbody.innerHTML =
+          '<tr><td colspan="6" class="empty-state"><div class="icon">⏳</div>Loading transactions...</td></tr>';
+
+        try {
+          const snapshot = await db
+            .collection("transactions")
+            .where("userUid", "==", currentUser.uid)
+            .orderBy("createdAt", "desc")
+            .limit(50)
+            .get();
+
+          if (snapshot.empty) {
+            tbody.innerHTML =
+              '<tr><td colspan="6" class="empty-state"><div class="icon">📭</div>No transactions yet</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = "";
+          snapshot.forEach((doc) => {
+            const tx = doc.data();
+            const date = tx.createdAt
+              ? new Date(tx.createdAt.seconds * 1000).toLocaleDateString(
+                  "en-US",
+                  { year: "numeric", month: "short", day: "numeric" },
+                )
+              : "N/A";
+            const statusBadge = getStatusBadge(tx.status);
+            const detail =
+              tx.type === "deposit"
+                ? tx.txHash || "N/A"
+                : tx.withdrawAddress || "N/A";
+            const shortDetail =
+              detail.length > 25 ? detail.substring(0, 25) + "..." : detail;
+
+            tbody.innerHTML += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${tx.type === "deposit" ? "📥 Deposit" : "📤 Withdrawal"}</td>
+                            <td>${(tx.amount || 0).toFixed(2)} USDT</td>
+                            <td>${(tx.fee || 0).toFixed(2)} USDT</td>
+                            <td>${statusBadge}</td>
+                            <td title="${detail}">${shortDetail}</td>
+                        </tr>`;
+          });
+        } catch (error) {
+          console.error("Error loading transactions:", error);
+          tbody.innerHTML =
+            '<tr><td colspan="6" class="empty-state"><div class="icon">⚠️</div>Error loading transactions</td></tr>';
+        }
+      }
+
+      function getStatusBadge(status) {
+        if (status === "approved")
+          return '<span class="badge badge-approved">✅ Approved</span>';
+        if (status === "rejected")
+          return '<span class="badge badge-rejected">❌ Rejected</span>';
+        return '<span class="badge badge-pending">⏳ Pending</span>';
+      }
+
+      // ==================== DEPOSIT / WITHDRAW ====================
+      function openDepositModal() {
+        document.getElementById("depositModal").classList.remove("hidden");
+        document.getElementById("depositAmount").value = "";
+        document.getElementById("depositTxHash").value = "";
+      }
+
+      function openWithdrawModal() {
+        document.getElementById("withdrawModal").classList.remove("hidden");
+        document.getElementById("withdrawAmount").value = "";
+        document.getElementById("withdrawAddress").value = "";
+        document.getElementById("withdrawAvailBalance").textContent =
+          (currentUserData?.balance || 0).toFixed(2) + " USDT";
+      }
+
+      function openInviteModal() {
+        document.getElementById("inviteModal").classList.remove("hidden");
+        document.getElementById("inviteCodeDisplay").textContent =
+          currentUserData?.inviteCode || "N/A";
+        document.getElementById("inviteLinkDisplay").textContent =
+          window.location.origin +
+          window.location.pathname +
+          "?ref=" +
+          (currentUserData?.inviteCode || "");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.add("hidden");
+      }
+
+      async function submitDeposit() {
+        const amountStr = document.getElementById("depositAmount").value;
+        const txHash = document.getElementById("depositTxHash").value.trim();
+        const amount = parseFloat(amountStr);
+
+        if (!amount || amount < 1) {
+          showToast("Minimum deposit is 1 USDT", "error");
+          return;
+        }
+        if (!txHash || txHash.length < 10) {
+          showToast("Please enter a valid transaction hash", "error");
+          return;
+        }
+        if (!db || !currentUser) {
+          showToast("Please sign in first", "error");
+          return;
+        }
+
+        const fee = amount * (DEPOSIT_FEE_PERCENT / 100);
+        const netAmount = amount - fee;
+
+        try {
+          await db.collection("transactions").add({
+            userUid: currentUser.uid,
+            userEmail: currentUser.email,
+            userName: currentUserData?.name || "",
+            type: "deposit",
+            amount: amount,
+            fee: fee,
+            netAmount: netAmount,
+            txHash: txHash,
+            status: "pending",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            reviewedAt: null,
+            reviewedBy: null,
+          });
+
+          // Update user's pending amount
+          await db
+            .collection("users")
+            .doc(currentUser.uid)
+            .update({
+              pendingAmount: firebase.firestore.FieldValue.increment(amount),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+          showToast("Deposit submitted for admin approval! ✅", "success");
+          closeModal("depositModal");
+          await loadUserData(currentUser);
+          updateUserDashboard();
+          loadUserTransactions();
+        } catch (error) {
+          console.error("Deposit error:", error);
+          showToast("Error submitting deposit: " + error.message, "error");
+        }
+      }
+
+      async function submitWithdrawal() {
+        const amountStr = document.getElementById("withdrawAmount").value;
+        const withdrawAddress = document
+          .getElementById("withdrawAddress")
+          .value.trim();
+        const amount = parseFloat(amountStr);
+
+        if (!amount || amount < 10) {
+          showToast("Minimum withdrawal is 10 USDT", "error");
+          return;
+        }
+        if (!withdrawAddress || withdrawAddress.length < 20) {
+          showToast("Please enter a valid BSC address", "error");
+          return;
+        }
+        if (amount > (currentUserData?.balance || 0)) {
+          showToast("Insufficient balance", "error");
+          return;
+        }
+        if (!db || !currentUser) {
+          showToast("Please sign in first", "error");
+          return;
+        }
+
+        const fee = amount * (WITHDRAWAL_FEE_PERCENT / 100);
+        const netAmount = amount - fee;
+
+        try {
+          await db.collection("transactions").add({
+            userUid: currentUser.uid,
+            userEmail: currentUser.email,
+            userName: currentUserData?.name || "",
+            type: "withdrawal",
+            amount: amount,
+            fee: fee,
+            netAmount: netAmount,
+            withdrawAddress: withdrawAddress,
+            status: "pending",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            reviewedAt: null,
+            reviewedBy: null,
+          });
+
+          // Reserve the balance
+          await db
+            .collection("users")
+            .doc(currentUser.uid)
+            .update({
+              balance: firebase.firestore.FieldValue.increment(-amount),
+              pendingWithdrawal:
+                firebase.firestore.FieldValue.increment(amount),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+          showToast(
+            "Withdrawal request submitted for admin approval! ✅",
+            "success",
+          );
+          closeModal("withdrawModal");
+          await loadUserData(currentUser);
+          updateUserDashboard();
+          loadUserTransactions();
+        } catch (error) {
+          console.error("Withdrawal error:", error);
+          showToast("Error submitting withdrawal: " + error.message, "error");
+        }
+      }
+
+      // ==================== INVITE FUNCTIONS ====================
+      function copyInviteLink() {
+        const link =
+          window.location.origin +
+          window.location.pathname +
+          "?ref=" +
+          (currentUserData?.inviteCode || "");
+        navigator.clipboard
+          .writeText(link)
+          .then(() => {
+            showToast("Invitation link copied! 📋", "success");
+          })
+          .catch(() => {
+            showToast("Failed to copy. Please copy manually.", "error");
+          });
+      }
+
+      function shareInviteLink() {
+        const link =
+          window.location.origin +
+          window.location.pathname +
+          "?ref=" +
+          (currentUserData?.inviteCode || "");
+        const text = `Join me on Halal Money - a Sharia-compliant Mudarabah platform for halal income! 🕌\n\nUse my invitation link: ${link}\n\nEarn 50% profit share + bonuses!`;
+        if (navigator.share) {
+          navigator
+            .share({ title: "Halal Money Invitation", text: text, url: link })
+            .catch(() => {});
+        } else {
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
+              showToast(
+                "Invitation message copied! Share it anywhere. 📤",
+                "success",
+              );
+            })
+            .catch(() => {
+              showToast(
+                "Failed to copy. Please copy the link manually.",
+                "error",
+              );
+            });
+        }
+      }
+
+      // ==================== EXPORT ====================
+      function exportUserData() {
+        if (!currentUserData) {
+          showToast("No data to export", "error");
+          return;
+        }
+        const data = currentUserData;
+        const csvContent = [
+          "Field,Value",
+          `Name,${data.name || ""}`,
+          `Email,${data.email || ""}`,
+          `Invitation Code,${data.inviteCode || ""}`,
+          `Balance (USDT),${(data.balance || 0).toFixed(2)}`,
+          `Total Deposited,${(data.totalDeposited || 0).toFixed(2)}`,
+          `Total Withdrawn,${(data.totalWithdrawn || 0).toFixed(2)}`,
+          `Referral Earnings,${(data.referralEarnings || 0).toFixed(2)}`,
+          `Profit Share %,${data.profitSharePercent || PROFIT_SHARE_BASE}`,
+          `Profit Share Bonus,${data.profitShareBonus || 0}`,
+          `Invited By,${data.invitedBy || "N/A"}`,
+          `Date Exported,${new Date().toISOString()}`,
+        ].join("\n");
+
+        const blob = new Blob([csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `halal_money_${data.inviteCode || "user"}_records.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast("Records exported! 📄", "success");
+      }
+
+      // ==================== ADMIN PANEL ====================
+      async function loadAdminPanel() {
+        if (!db || !isAdmin) return;
+        await loadAdminStats();
+        await loadAdminPending();
+        await loadAdminUsers();
+        await loadAdminAllTx();
+        await loadAdminReferrals();
+      }
+
+      async function loadAdminStats() {
+        if (!db) return;
+        try {
+          const usersSnap = await db.collection("users").get();
+          document.getElementById("adminTotalUsers").textContent =
+            usersSnap.size;
+
+          let totalDep = 0,
+            totalFees = 0,
+            pendingCount = 0;
+          const txSnap = await db.collection("transactions").get();
+          txSnap.forEach((doc) => {
+            const tx = doc.data();
+            if (tx.status === "approved" && tx.type === "deposit") {
+              totalDep += tx.amount || 0;
+              totalFees += tx.fee || 0;
+            }
+            if (tx.status === "approved" && tx.type === "withdrawal") {
+              totalFees += tx.fee || 0;
+            }
+            if (tx.status === "pending") pendingCount++;
+          });
+          document.getElementById("adminTotalDeposits").textContent =
+            totalDep.toFixed(2) + " USDT";
+          document.getElementById("adminTotalFees").textContent =
+            totalFees.toFixed(2) + " USDT";
+          document.getElementById("adminPendingCount").textContent =
+            pendingCount;
+        } catch (error) {
+          console.error("Error loading admin stats:", error);
+        }
+      }
+
+      async function loadAdminPending() {
+        if (!db) return;
+        const tbody = document.getElementById("adminPendingBody");
+        tbody.innerHTML =
+          '<tr><td colspan="6" class="empty-state">Loading...</td></tr>';
+        try {
+          const snapshot = await db
+            .collection("transactions")
+            .where("status", "==", "pending")
+            .orderBy("createdAt", "desc")
+            .get();
+
+          if (snapshot.empty) {
+            tbody.innerHTML =
+              '<tr><td colspan="6" class="empty-state">✅ No pending approvals</td></tr>';
+            return;
+          }
+          tbody.innerHTML = "";
+          snapshot.forEach((doc) => {
+            const tx = doc.data();
+            const date = tx.createdAt
+              ? new Date(tx.createdAt.seconds * 1000).toLocaleDateString(
+                  "en-US",
+                  { year: "numeric", month: "short", day: "numeric" },
+                )
+              : "N/A";
+            const detail =
+              tx.type === "deposit"
+                ? tx.txHash || "N/A"
+                : tx.withdrawAddress || "N/A";
+            const shortDetail =
+              detail.length > 30 ? detail.substring(0, 30) + "..." : detail;
+            tbody.innerHTML += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${tx.userName || tx.userEmail}</td>
+                            <td>${tx.type === "deposit" ? "📥 Deposit" : "📤 Withdrawal"}</td>
+                            <td>${(tx.amount || 0).toFixed(2)} USDT</td>
+                            <td title="${detail}">${shortDetail}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="approveTx('${doc.id}')">✅ Approve</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectTx('${doc.id}')">❌ Reject</button>
+                            </td>
+                        </tr>`;
+          });
+        } catch (error) {
+          tbody.innerHTML =
+            '<tr><td colspan="6" class="empty-state">Error loading</td></tr>';
+        }
+      }
+
+      async function approveTx(txId) {
+        if (!db || !isAdmin) return;
+        try {
+          const txDoc = await db.collection("transactions").doc(txId).get();
+          if (!txDoc.exists) {
+            showToast("Transaction not found", "error");
+            return;
+          }
+          const tx = txDoc.data();
+
+          if (tx.status !== "pending") {
+            showToast("Transaction already processed", "error");
+            return;
+          }
+
+          // Update transaction status
+          await db.collection("transactions").doc(txId).update({
+            status: "approved",
+            reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            reviewedBy: currentUser.email,
+          });
+
+          const userRef = db.collection("users").doc(tx.userUid);
+
+          if (tx.type === "deposit") {
+            // Credit net amount to user
+            await userRef.update({
+              balance: firebase.firestore.FieldValue.increment(
+                tx.netAmount || tx.amount - tx.fee,
+              ),
+              totalDeposited: firebase.firestore.FieldValue.increment(
+                tx.amount,
+              ),
+              pendingAmount: firebase.firestore.FieldValue.increment(
+                -tx.amount,
+              ),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            // Handle referral reward
+            const userDoc = await userRef.get();
+            const userData = userDoc.data();
+            if (userData && userData.invitedBy) {
+              await grantReferralReward(
+                userData.invitedBy,
+                tx.amount,
+                tx.userUid,
+              );
+            }
+          } else if (tx.type === "withdrawal") {
+            await userRef.update({
+              pendingWithdrawal: firebase.firestore.FieldValue.increment(
+                -tx.amount,
+              ),
+              totalWithdrawn: firebase.firestore.FieldValue.increment(
+                tx.amount,
+              ),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          }
+
+          showToast("Transaction approved! ✅", "success");
+          await loadAdminPanel();
+          if (!isAdmin) {
+            await loadUserData(currentUser);
+            updateUserDashboard();
+            loadUserTransactions();
+          }
+        } catch (error) {
+          console.error("Approve error:", error);
+          showToast("Error: " + error.message, "error");
+        }
+      }
+
+      async function rejectTx(txId) {
+        if (!db || !isAdmin) return;
+        const reason = prompt("Reason for rejection (optional):");
+        try {
+          const txDoc = await db.collection("transactions").doc(txId).get();
+          if (!txDoc.exists) {
+            showToast("Transaction not found", "error");
+            return;
+          }
+          const tx = txDoc.data();
+
+          await db
+            .collection("transactions")
+            .doc(txId)
+            .update({
+              status: "rejected",
+              rejectionReason: reason || "Rejected by admin",
+              reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              reviewedBy: currentUser.email,
+            });
+
+          const userRef = db.collection("users").doc(tx.userUid);
+          if (tx.type === "deposit") {
+            await userRef.update({
+              pendingAmount: firebase.firestore.FieldValue.increment(
+                -tx.amount,
+              ),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          } else if (tx.type === "withdrawal") {
+            // Refund the reserved balance
+            await userRef.update({
+              balance: firebase.firestore.FieldValue.increment(tx.amount),
+              pendingWithdrawal: firebase.firestore.FieldValue.increment(
+                -tx.amount,
+              ),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          }
+
+          showToast("Transaction rejected", "info");
+          await loadAdminPanel();
+        } catch (error) {
+          showToast("Error: " + error.message, "error");
+        }
+      }
+
+      async function grantReferralReward(
+        inviterCode,
+        depositAmount,
+        inviteeUid,
+      ) {
+        if (!db) return;
+        try {
+          const snapshot = await db
+            .collection("users")
+            .where("inviteCode", "==", inviterCode)
+            .limit(1)
+            .get();
+
+          if (!snapshot.empty) {
+            const inviterDoc = snapshot.docs[0];
+            const inviterRef = db.collection("users").doc(inviterDoc.id);
+            const reward = depositAmount * (REFERRAL_REWARD_PERCENT / 100);
+
+            await inviterRef.update({
+              referralEarnings: firebase.firestore.FieldValue.increment(reward),
+              balance: firebase.firestore.FieldValue.increment(reward),
+              totalInviteeDeposits:
+                firebase.firestore.FieldValue.increment(depositAmount),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            // Recalculate profit share bonus
+            const updatedDoc = await inviterRef.get();
+            const updatedData = updatedDoc.data();
+            const totalInviteeDep = updatedData.totalInviteeDeposits || 0;
+            const bonusPercent =
+              Math.floor(totalInviteeDep / 100) *
+              PROFIT_SHARE_BONUS_PER_100_USDT;
+            const newProfitShare = PROFIT_SHARE_BASE + bonusPercent;
+
+            await inviterRef.update({
+              profitSharePercent: newProfitShare,
+              profitShareBonus: bonusPercent,
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            // Update referral record
+            const refSnapshot = await db
+              .collection("referrals")
+              .where("inviterUid", "==", inviterDoc.id)
+              .where("inviteeUid", "==", inviteeUid)
+              .limit(1)
+              .get();
+
+            if (!refSnapshot.empty) {
+              await db
+                .collection("referrals")
+                .doc(refSnapshot.docs[0].id)
+                .update({
+                  inviteeTotalDeposited:
+                    firebase.firestore.FieldValue.increment(depositAmount),
+                  bonusEarned: firebase.firestore.FieldValue.increment(reward),
+                });
+            }
+          }
+        } catch (error) {
+          console.error("Error granting referral reward:", error);
+        }
+      }
+
+      async function loadAdminUsers() {
+        if (!db) return;
+        const tbody = document.getElementById("adminUsersBody");
+        tbody.innerHTML =
+          '<tr><td colspan="6" class="empty-state">Loading...</td></tr>';
+        try {
+          const snapshot = await db
+            .collection("users")
+            .orderBy("createdAt", "desc")
+            .get();
+          if (snapshot.empty) {
+            tbody.innerHTML =
+              '<tr><td colspan="6" class="empty-state">No users found</td></tr>';
+            return;
+          }
+          tbody.innerHTML = "";
+          snapshot.forEach((doc) => {
+            const u = doc.data();
+            const date = u.createdAt
+              ? new Date(u.createdAt.seconds * 1000).toLocaleDateString(
+                  "en-US",
+                  { year: "numeric", month: "short", day: "numeric" },
+                )
+              : "N/A";
+            tbody.innerHTML += `
+                        <tr>
+                            <td>${u.name || "N/A"}</td>
+                            <td>${u.email || "N/A"}</td>
+                            <td><strong>${u.inviteCode || "N/A"}</strong></td>
+                            <td>${(u.balance || 0).toFixed(2)} USDT</td>
+                            <td>${u.profitSharePercent || PROFIT_SHARE_BASE}%</td>
+                            <td>${date}</td>
+                        </tr>`;
+          });
+        } catch (error) {
+          tbody.innerHTML =
+            '<tr><td colspan="6" class="empty-state">Error loading users</td></tr>';
+        }
+      }
+
+      async function loadAdminAllTx() {
+        if (!db) return;
+        const tbody = document.getElementById("adminAllTxBody");
+        tbody.innerHTML =
+          '<tr><td colspan="7" class="empty-state">Loading...</td></tr>';
+        try {
+          const snapshot = await db
+            .collection("transactions")
+            .orderBy("createdAt", "desc")
+            .limit(100)
+            .get();
+          if (snapshot.empty) {
+            tbody.innerHTML =
+              '<tr><td colspan="7" class="empty-state">No transactions</td></tr>';
+            return;
+          }
+          tbody.innerHTML = "";
+          snapshot.forEach((doc) => {
+            const tx = doc.data();
+            const date = tx.createdAt
+              ? new Date(tx.createdAt.seconds * 1000).toLocaleDateString(
+                  "en-US",
+                  { year: "numeric", month: "short", day: "numeric" },
+                )
+              : "N/A";
+            const detail =
+              tx.type === "deposit"
+                ? tx.txHash || ""
+                : tx.withdrawAddress || "";
+            const shortDetail =
+              detail.length > 25 ? detail.substring(0, 25) + "..." : detail;
+            tbody.innerHTML += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${tx.userName || tx.userEmail}</td>
+                            <td>${tx.type}</td>
+                            <td>${(tx.amount || 0).toFixed(2)}</td>
+                            <td>${(tx.fee || 0).toFixed(2)}</td>
+                            <td>${getStatusBadge(tx.status)}</td>
+                            <td title="${detail}">${shortDetail}</td>
+                        </tr>`;
+          });
+        } catch (error) {
+          tbody.innerHTML =
+            '<tr><td colspan="7" class="empty-state">Error loading</td></tr>';
+        }
+      }
+
+      async function loadAdminReferrals() {
+        if (!db) return;
+        const tbody = document.getElementById("adminReferralsBody");
+        tbody.innerHTML =
+          '<tr><td colspan="5" class="empty-state">Loading...</td></tr>';
+        try {
+          const snapshot = await db
+            .collection("referrals")
+            .orderBy("createdAt", "desc")
+            .limit(100)
+            .get();
+          if (snapshot.empty) {
+            tbody.innerHTML =
+              '<tr><td colspan="5" class="empty-state">No referrals yet</td></tr>';
+            return;
+          }
+          tbody.innerHTML = "";
+          for (const doc of snapshot.docs) {
+            const r = doc.data();
+            const inviterDoc = await db
+              .collection("users")
+              .doc(r.inviterUid)
+              .get();
+            const inviteeDoc = await db
+              .collection("users")
+              .doc(r.inviteeUid)
+              .get();
+            const inviterName = inviterDoc.exists
+              ? inviterDoc.data().name || r.inviterUid
+              : r.inviterUid;
+            const inviteeName = inviteeDoc.exists
+              ? inviteeDoc.data().name || r.inviteeUid
+              : r.inviteeUid;
+            const date = r.createdAt
+              ? new Date(r.createdAt.seconds * 1000).toLocaleDateString(
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  },
+                )
+              : "N/A";
+            tbody.innerHTML += `
+                        <tr>
+                            <td>${inviterName}</td>
+                            <td>${inviteeName}</td>
+                            <td>${(r.inviteeTotalDeposited || 0).toFixed(2)} USDT</td>
+                            <td>${(r.bonusEarned || 0).toFixed(2)} USDT</td>
+                            <td>${date}</td>
+                        </tr>`;
+          }
+        } catch (error) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" class="empty-state">Error loading</td></tr>';
+        }
+      }
+
+      function switchAdminTab(tabName) {
+        document
+          .querySelectorAll(".admin-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".admin-content")
+          .forEach((c) => c.classList.remove("active"));
+        const tabMap = {
+          pending: "adminTabPending",
+          users: "adminTabUsers",
+          allTx: "adminTabAllTx",
+          referrals: "adminTabReferrals",
+        };
+        document.getElementById(tabMap[tabName]).classList.add("active");
+        event.target.classList.add("active");
+        // Refresh data
+        if (tabName === "pending") loadAdminPending();
+        if (tabName === "users") loadAdminUsers();
+        if (tabName === "allTx") loadAdminAllTx();
+        if (tabName === "referrals") loadAdminReferrals();
+      }
+
+      // ==================== UTILITY FUNCTIONS ====================
+      function showToast(message, type = "info") {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toast.onclick = () => toast.remove();
+        container.appendChild(toast);
+        setTimeout(() => {
+          if (toast.parentNode) toast.remove();
+        }, 4500);
+      }
+
+      function getFirebaseErrorMessage(error) {
+        const messages = {
+          "auth/email-already-in-use":
+            "This email is already registered. Please sign in.",
+          "auth/invalid-email": "Invalid email address.",
+          "auth/weak-password": "Password must be at least 6 characters.",
+          "auth/user-not-found": "No account found with this email.",
+          "auth/wrong-password": "Incorrect password. Please try again.",
+          "auth/invalid-credential": "Invalid email or password.",
+          "auth/too-many-requests":
+            "Too many attempts. Please wait and try again.",
+          "auth/user-disabled": "This account has been disabled.",
+        };
+        return (
+          messages[error.code] ||
+          error.message ||
+          "An error occurred. Please try again."
+        );
+      }
+
+      // Close modals on overlay click
+      document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("modal-overlay")) {
+          event.target.classList.add("hidden");
+        }
+      });
+
+      // Close modals with Escape key
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          document
+            .querySelectorAll(".modal-overlay")
+            .forEach((m) => m.classList.add("hidden"));
+        }
+      });
+
+      console.log("🕌 Halal Money Platform Ready");
+      console.log("📋 Admin:", ADMIN_EMAIL);
+      console.log("💼 Deposit Address:", PLATFORM_USDT_ADDRESS);
+      console.log("📱 Support:", TELEGRAM_SUPPORT, "| Bot:", TELEGRAM_BOT);
+      console.log(
+        "⚠️ Remember to update Firebase config with your project credentials!",
+      );
+    </script>
+  </body>
+</html>
